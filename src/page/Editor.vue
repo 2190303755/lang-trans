@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref, useTemplateRef} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref, useTemplateRef} from 'vue';
 import {dumpEntries, showConfig, translationEntries as entries} from '@/Global.js';
 import TranslationEntry from '@/view/TranslationEntry.vue';
 import Switch from '@/view/Switch.vue';
@@ -20,7 +20,9 @@ const filtered = computed(() => {
 });
 
 function openConfig() {
-  showConfig.value = true;
+  if (window.confirm("Do you really want to leave?")) {
+    showConfig.value = true;
+  }
 }
 
 function syncHeight() {
@@ -29,14 +31,21 @@ function syncHeight() {
   placeholder.value.style.minHeight = height + 'px';
 }
 
+function requireConfirmation(event) {
+  event.preventDefault();
+  event.returnValue = "";
+}
+
 onMounted(() => {
   window.addEventListener('resize', syncHeight);
   window.addEventListener('load', syncHeight);
+  window.addEventListener("beforeunload", requireConfirmation);
   syncHeight();
 });
-onUnmounted(() => {
+onBeforeUnmount(() => {
   window.removeEventListener('resize', syncHeight);
   window.removeEventListener('load', syncHeight);
+  window.removeEventListener("beforeunload", requireConfirmation);
 });
 </script>
 
@@ -44,22 +53,32 @@ onUnmounted(() => {
   <div class="glass" ref="glass"/>
   <div class="header" ref="header">
     <div class="panel">
-      <button @click="openConfig">Back</button>
+      <button @click="openConfig" class="round-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/>
+        </svg>
+      </button>
       <div class="switches">
         <Switch name="switch-show-missing" text="Show Missing" v-model="showMissing"/>
         <Switch name="switch-show-equal" text="Show Equal" v-model="showEqual"/>
       </div>
-      <button @click="dumpEntries">Export</button>
+      <button @click="dumpEntries" class="round-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+              d="M19,12v7L5,19v-7L3,12v7c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2v-7h-2zM13,12.67l2.59,-2.58L17,11.5l-5,5 -5,-5 1.41,-1.41L11,12.67L11,3h2z"/>
+        </svg>
+      </button>
     </div>
   </div>
   <div class="entry-list">
     <div ref="placeholder" style="margin-bottom: -15px"/>
     <TranslationEntry
-        v-for="(entry, index) in filtered"
-        :key="index"
+        v-for="entry in filtered"
+        :key="entry.key"
         :translation-key="entry.key"
         :previous-value="entry.value"
-        :warning="!showMissing && entry.mark === 'missing'"
+        :mark="entry.mark"
+        :warning="!showMissing"
     />
   </div>
 </template>
@@ -104,6 +123,27 @@ onUnmounted(() => {
   height: 100%;
   justify-content: flex-start;
   scrollbar-width: none;
+}
+
+.round-button {
+  padding: 8px;
+  border-radius: 50%;
+  text-align: center;
+  text-decoration: none;
+  line-height: 0;
+  font-size: 0;
+}
+
+.round-button path {
+  fill: var(--color-text)
+}
+
+.round-button:hover path {
+  fill: var(--color-button-hovered-text);
+}
+
+.round-button:active path {
+  fill: var(--color-text);
 }
 
 .panel button {

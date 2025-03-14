@@ -1,24 +1,32 @@
 <script setup>
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {referenceFile, workingFile} from '../Global.js';
 
 const {
   translationKey,
   previousValue,
+  mark,
   warning
 } = defineProps({
   translationKey: String,
   previousValue: String,
+  mark: String,
   warning: Boolean
 });
 
 const editing = ref(false);
+const unchanged = ref(true);
+const showWarning = computed(() => warning && unchanged.value && mark === 'missing');
 
 function update(event) {
   editing.value = false;
   const value = event.target.value.trim();
   if (value.length) {
     workingFile.value.set(translationKey, value);
+    unchanged.value = value === previousValue;
+  } else {
+    unchanged.value = true;
+    workingFile.value.set(translationKey, previousValue);
   }
 }
 
@@ -47,11 +55,11 @@ function getFocus({el}) {
 <template>
   <div :class="{
     'translation-entry': true,
-    'warning': warning
+    'warning': showWarning
   }">
     <div class="entry-header" @click="editing = true">
       <span class="key">{{ translationKey }}</span>
-      <button @click="undo" :disabled="workingFile.get(translationKey) === previousValue">Undo</button>
+      <button @click="undo" :disabled="unchanged">Undo</button>
     </div>
     <div @click="editing = true">
       <p class="value">{{ referenceFile.get(translationKey) }}</p>
@@ -84,24 +92,23 @@ function getFocus({el}) {
 }
 
 .entry-header {
-  display: grid;
+  display: flex;
   width: 100%;
-  grid-template-columns: 1fr max-content;
-  grid-template-rows: auto;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .key {
   font-size: 1.25rem;
-  width: 100%;
-  grid-row: 1/ 2;
-  grid-column: 1 /2;
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .entry-header button {
-  grid-row: 1/ 2;
-  grid-column: 2 /3;
-  display: flex;
-  gap: 5px;
+  align-self: flex-start;
+  flex-shrink: 0;
 }
 
 .warning {
@@ -109,12 +116,17 @@ function getFocus({el}) {
   box-shadow: 0 4px 8px var(--color-error-shadow);
 }
 
-textarea {
+.translation-entry p {
+  font-size: 1rem;
+}
+
+.translation-entry textarea {
   border: none;
   outline: none;
   resize: none;
   width: 100%;
   min-height: 1rem;
   height: 1rem;
+  font-size: 1rem;
 }
 </style>

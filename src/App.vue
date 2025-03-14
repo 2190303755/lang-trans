@@ -27,7 +27,7 @@ onMounted(prepareLocales);
 
 <template>
   <main>
-    <div v-if="preparing">
+    <div v-if="preparing" class="init-screen">
       <p v-if="fetching">Loading locales</p>
       <div v-else>
         <p>Fail to load locales</p>
@@ -38,3 +38,13 @@ onMounted(prepareLocales);
     <Editor v-else/>
   </main>
 </template>
+
+<style>
+.init-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+</style>
