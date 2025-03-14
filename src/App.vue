@@ -2,7 +2,7 @@
 import Config from '@/page/Config.vue';
 import Editor from '@/page/Editor.vue';
 import {locales, showConfig, translationEntries} from '@/Global.js';
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {getLang, getLocales, SOURCE} from '@/Networking.js';
 
 const preparing = ref(true);
@@ -22,7 +22,7 @@ function prepareLocales() {
   });
 }
 
-//onMounted(prepareLocales);
+onMounted(prepareLocales);
 </script>
 
 <template>

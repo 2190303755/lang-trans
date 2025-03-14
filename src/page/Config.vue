@@ -55,51 +55,76 @@ function closeConfig() {
   <div v-if="loading">
     <p>Loading</p>
   </div>
-  <div v-else>
-    <label for="referenceFile">Reference:</label>
-    <select id="referenceFile" :value="reference" @input="setReference">
-      <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === working">
-        {{ locale }}
-      </option>
-    </select>
-    <label for="workingFile">Working:</label>
-    <select id="workingFile" :value="working" @input="setWorking">
-      <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === reference">
-        {{ locale }}
-      </option>
-    </select>
-    <button @click="closeConfig" :disabled="!reference || !working || reference === working">Continue</button>
+  <div v-else class="config-menu">
+    <div class="reference-selection">
+      <label for="referenceFile">Reference:</label>
+      <select id="referenceFile" :value="reference" @input="setReference">
+        <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === working">
+          {{ locale }}
+        </option>
+      </select>
+    </div>
+    <div class="working-selection">
+      <label for="workingFile">Working:</label>
+      <select id="workingFile" :value="working" @input="setWorking">
+        <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === reference">
+          {{ locale }}
+        </option>
+      </select>
+    </div>
+    <button class="confirm" @click="closeConfig" :disabled="!reference || !working || reference === working">Continue
+    </button>
   </div>
 </template>
 
 <style scoped>
-ul {
-  display: flex;
-  gap: 5px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  list-style-type: none;
-  margin-top: 5px;
-  padding: 5px;
-  position: absolute;
-  overflow-y: auto;
-  flex-direction: column;
-  align-items: flex-start;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+.config-menu {
+  display: grid;
+  height: 100vh;
+  width: 100vw;
+  gap: 15px;
+  padding: 15px;
+  place-items: center;
+  grid-template-columns: auto auto;
+  grid-template-rows: 3fr 1fr;
 }
 
-li {
-  padding: 8px;
-  cursor: pointer;
+.reference-selection {
+  grid-row: 1 / 2;
+  grid-column: 1 / 2;
   width: 100%;
+  margin: 20px auto;
 }
 
-li:hover {
-  color: hsla(160, 100%, 35%, 1);
+.working-selection {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  width: 100%;
+  margin: 20px auto;
 }
 
-li:active {
-  color: hsla(160, 100%, 25%, 1);
+.confirm {
+  grid-row: 2 / 3;
+  grid-column: 1 / 3;
+}
+
+.config-menu select {
+  width: 100%;
+  padding: 10px 2px;
+  font-size: 16px;
+  color: var(--color-text);
+  background-color: transparent;
+  border: 1px solid var(--color-outline);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.config-menu select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.config-menu option {
+  padding: 10px;
 }
 </style>

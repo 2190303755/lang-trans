@@ -22,8 +22,25 @@ function update(event) {
   }
 }
 
+function finish(event) {
+  event.preventDefault();
+  update(event);
+}
+
 function undo() {
   workingFile.value.set(translationKey, previousValue);
+}
+
+function resize(event) {
+  const field = event.target;
+  if (field.scrollHeight > field.clientHeight) {
+    field.style.height = field.scrollHeight + "px";
+  }
+}
+
+function getFocus({el}) {
+  el.focus();
+  resize({target: el});
 }
 </script>
 
@@ -32,22 +49,26 @@ function undo() {
     'translation-entry': true,
     'warning': warning
   }">
-    <div class="entry-header">
+    <div class="entry-header" @click="editing = true">
       <span class="key">{{ translationKey }}</span>
       <button @click="undo" :disabled="workingFile.get(translationKey) === previousValue">Undo</button>
     </div>
     <div @click="editing = true">
       <p class="value">{{ referenceFile.get(translationKey) }}</p>
-      <input
+      <p v-show="!editing">{{ workingFile.get(translationKey) ?? "&nbsp;" }}</p>
+      <textarea
           v-if="editing"
           :value="workingFile.get(translationKey)"
           :placeholder="previousValue"
           @change="update"
           @blur="update"
-          @keyup.enter="update"
-          @vue:mounted="({ el }) => el.focus()"
-      >
-      <p v-else>{{ workingFile.get(translationKey) ?? "&nbsp;" }}</p>
+          @keydown.enter="finish"
+          @input="resize"
+          autocomplete="off"
+          spellcheck="true"
+          rows="1"
+          @vue:mounted="getFocus"
+      />
     </div>
   </div>
 </template>
@@ -79,15 +100,21 @@ function undo() {
 .entry-header button {
   grid-row: 1/ 2;
   grid-column: 2 /3;
+  display: flex;
+  gap: 5px;
 }
 
 .warning {
-  border: 1px solid red;
+  border: 1px solid var(--color-error);
+  box-shadow: 0 4px 8px var(--color-error-shadow);
 }
 
-input {
+textarea {
   border: none;
   outline: none;
-  flex-grow: 1;
+  resize: none;
+  width: 100%;
+  min-height: 1rem;
+  height: 1rem;
 }
 </style>

@@ -1,0 +1,15 @@
+:root {
+    --color-primary: rgb(58 96 143);
+    --color-on-primary: rgb(255 255 255);
+    --color-button-base: #D8E3F8;
+    --color-button-hovered: #F0F3FB;
+    --color-button-active: #C8D3E8;
+    --color-button-disabled: rgba(31 31 31 / 0.12);
+    --color-button-hovered-text: rgb(58 96 143);
+    --color-button-disabled-text: rgb(25 28 32 / 0.38);
+    --color-text: rgb(17 28 43);
+    --color-switch-off: #E1E2E9;
+    --color-outline: #73777F;
+    --color-error: rgb(186 26 26);
+    --color-error-shadow: rgba(186 26 26 / 0.25);
+}

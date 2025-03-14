@@ -44,9 +44,11 @@ onUnmounted(() => {
   <div class="glass" ref="glass"/>
   <div class="header" ref="header">
     <div class="panel">
-      <Switch name="switch-show-missing" text="Show Missing" v-model="showMissing"/>
       <button @click="openConfig">Back</button>
-      <Switch name="switch-show-equal" text="Show Equal" v-model="showEqual"/>
+      <div class="switches">
+        <Switch name="switch-show-missing" text="Show Missing" v-model="showMissing"/>
+        <Switch name="switch-show-equal" text="Show Equal" v-model="showEqual"/>
+      </div>
       <button @click="dumpEntries">Export</button>
     </div>
   </div>
@@ -81,16 +83,16 @@ onUnmounted(() => {
 }
 
 .panel {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
   height: fit-content;
   width: 100%;
   border: 1px solid #b0b0b0;
   border-radius: 8px;
   background-color: white;
-  padding: 5px 5px 5px 10px;
-  row-gap: 5px;
-  grid-template-rows: auto auto;
-  grid-template-columns: 1fr max-content;
+  padding: 5px 15px 5px 15px;
 }
 
 .entry-list {
@@ -102,5 +104,13 @@ onUnmounted(() => {
   height: 100%;
   justify-content: flex-start;
   scrollbar-width: none;
+}
+
+.panel button {
+  flex: 0 0 auto
+}
+
+.switches {
+  flex: 1 1 auto
 }
 </style>

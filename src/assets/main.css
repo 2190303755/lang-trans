@@ -1,4 +1,5 @@
 @import './base.css';
+@import './color.css';
 
 #app {
     width: 100%;
@@ -9,7 +10,7 @@
 a,
 .green {
     text-decoration: none;
-    color: hsla(160, 100%, 37%, 1);
+    color: rgb(56 102 102);
     transition: 0.4s;
     padding: 3px;
 }
@@ -21,18 +22,27 @@ a,
 }
 
 button {
-    background: hsla(160, 100%, 35%, 1);
-    color: white;
-    border: none;
+    background: var(--color-button-base);
+    color: var(--color-text);
+    border: 1px solid var(--color-primary);
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 8px;
 }
 
 button:hover {
-    background: hsla(160, 100%, 37%, 1);
+    background: var(--color-button-hovered);
+    border: 1px solid var(--color-outline);
+    color: var(--color-button-hovered-text);
 }
 
 button:active {
-    background: hsla(160, 100%, 32%, 1);
+    background: var(--color-button-active);
+    color: var(--color-text);
+}
+
+button:disabled {
+    background: var(--color-button-disabled);
+    border: 1px solid var(--color-outline);
+    color: var(--color-button-disabled-text);
 }

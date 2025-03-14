@@ -27,36 +27,42 @@ const {
 .switch label {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
-  background-color: #ccc;
-  border-radius: 34px;
+  width: 52px;
+  height: 32px;
+  background-color: var(--color-switch-off);
+  border-radius: 32px;
   cursor: pointer;
-  transition: background-color 0.25s;
+  transition: border 0.25s, background-color 0.25s;
+  border: 2px solid #b0b0b0;
 }
 
 .switch label:after {
   content: '';
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background-color: white;
-  top: 4px;
-  left: 4px;
-  transition: transform 0.25s;
+  background-color: var(--color-outline);
+  top: 6px;
+  left: 6px;
+  transition: background-color 0.25s, width 0.25s, height 0.25s, transform 0.25s;
 }
 
 .switch input:checked + label {
-  background-color: hsla(160, 100%, 35%, 1);
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 .switch input:checked + label:after {
-  transform: translateX(26px);
+  width: 24px;
+  height: 24px;
+  background-color: var(--color-on-primary);
+  transform: translateX(16px) translateY(-4px);
 }
 
 .switch-container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 10px;
 }
