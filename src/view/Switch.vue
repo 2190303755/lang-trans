@@ -33,7 +33,7 @@ const {
   border-radius: 32px;
   cursor: pointer;
   transition: border 0.25s, background-color 0.25s;
-  border: 2px solid #b0b0b0;
+  border: 2px solid var(--color-outline);
 }
 
 .switch label:after {
@@ -65,5 +65,6 @@ const {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+  line-height: 0;
 }
 </style>

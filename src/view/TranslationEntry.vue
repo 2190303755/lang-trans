@@ -35,10 +35,6 @@ function finish(event) {
   update(event);
 }
 
-function undo() {
-  workingFile.value.set(translationKey, previousValue);
-}
-
 function resize(event) {
   const field = event.target;
   if (field.scrollHeight > field.clientHeight) {
@@ -55,15 +51,15 @@ function getFocus({el}) {
 <template>
   <div :class="{
     'translation-entry': true,
-    'warning': showWarning
-  }">
-    <div class="entry-header" @click="editing = true">
-      <span class="key">{{ translationKey }}</span>
-      <button @click="undo" :disabled="unchanged">Undo</button>
+    'warning': showWarning,
+    'modified': !unchanged
+  }" @click="editing = true">
+    <div class="entry-header">
+      <samp class="key">{{ translationKey }}</samp>
     </div>
-    <div @click="editing = true">
-      <p class="value">{{ referenceFile.get(translationKey) }}</p>
-      <p v-show="!editing">{{ workingFile.get(translationKey) ?? "&nbsp;" }}</p>
+    <div style="line-height: 0">
+      <samp class="value">{{ referenceFile.get(translationKey) }}</samp>
+      <hr/>
       <textarea
           v-if="editing"
           :value="workingFile.get(translationKey)"
@@ -77,18 +73,19 @@ function getFocus({el}) {
           rows="1"
           @vue:mounted="getFocus"
       />
+      <samp class="value" v-else>{{ workingFile.get(translationKey) ?? "&nbsp;" }}</samp>
     </div>
   </div>
 </template>
 
 <style>
 .translation-entry {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-outline-light);
   border-radius: 8px;
   height: fit-content;
   margin: 0 1rem 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
+  box-shadow: 0 2px 5px var(--color-primary-shadow);
+  padding: 10px;
 }
 
 .entry-header {
@@ -99,10 +96,18 @@ function getFocus({el}) {
 }
 
 .key {
-  font-size: 1.25rem;
+  font-size: 0.825rem;
+  line-height: 2;
   flex: 1;
   min-width: 0;
   white-space: normal;
+  word-wrap: break-word;
+}
+
+.value {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.5;
   word-wrap: break-word;
 }
 
@@ -113,11 +118,12 @@ function getFocus({el}) {
 
 .warning {
   border: 1px solid var(--color-error);
-  box-shadow: 0 4px 8px var(--color-error-shadow);
+  box-shadow: 0 2px 5px var(--color-error-shadow);
 }
 
-.translation-entry p {
-  font-size: 1rem;
+.modified {
+  border: 1px solid var(--color-notice);
+  box-shadow: 0 2px 5px var(--color-notice-shadow);
 }
 
 .translation-entry textarea {
@@ -128,5 +134,25 @@ function getFocus({el}) {
   min-height: 1rem;
   height: 1rem;
   font-size: 1rem;
+  font-family: monospace;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.translation-entry hr {
+  margin: 2px -2px;
+  background-color: var(--color-primary-hr);
+  border: none;
+  height: 1px;
+}
+
+.warning hr {
+  margin: 2px -2px;
+  background-color: var(--color-error-hr);
+}
+
+.modified hr {
+  margin: 2px -2px;
+  background-color: var(--color-notice-hr);
 }
 </style>

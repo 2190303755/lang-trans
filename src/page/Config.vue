@@ -13,99 +13,116 @@ import {getLang} from '@/Networking.js';
 import {ref} from 'vue';
 
 const loading = ref(false);
-let referencePromise;
-let workingPromise;
-
-async function prepareLang(locale) {
-  return getLang(locale).catch(error => {
-    console.error("Failed to fetch lang", error);
-    setTimeout(prepareLang, 100, locale);
-  });
-}
+const failure = ref(false);
+const promises = [];
 
 function setReference(event) {
-  referencePromise = prepareLang(reference.value = event.target.value);
+  promises[0] = getLang(reference.value = event.target.value);
   translationEntries.value = [];
 }
 
 function setWorking(event) {
-  workingPromise = prepareLang(working.value = event.target.value);
+  promises[1] = getLang(working.value = event.target.value);
   translationEntries.value = [];
 }
 
 function closeConfig() {
   loading.value = true;
-  showConfig.value = false;
+  promises[0] = getLang(reference.value);
+  promises[1] = getLang(working.value);
   setTimeout(async () => {
-    let value = await referencePromise;
-    if (value) {
-      referenceFile.value = value;
+    try {
+      const values = await Promise.all(promises);
+      if (values) {
+        referenceFile.value = values[0];
+        workingFile.value = new Map(values[1]);
+        populateEntries();
+        showConfig.value = false;
+        loading.value = false;
+        return;
+      }
+    } catch (error) {
+      console.error("Failed to fetch lang", error);
     }
-    value = await workingPromise;
-    if (value) {
-      workingFile.value = value;
-    }
-    populateEntries();
     loading.value = false;
+    failure.value = true;
   }, 0);
 }
 </script>
 
 <template>
-  <div v-if="loading">
-    <p>Loading</p>
-  </div>
-  <div v-else class="config-menu">
-    <div class="reference-selection">
-      <label for="referenceFile">Reference:</label>
-      <select id="referenceFile" :value="reference" @input="setReference">
-        <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === working">
-          {{ locale }}
-        </option>
-      </select>
+  <div class="config-container">
+    <p v-if="loading" style="margin: auto">Loading</p>
+    <div v-else class="config-menu">
+      <div class="reference-selection">
+        <label for="referenceFile">Reference:</label>
+        <select id="referenceFile" :value="reference" @input="setReference">
+          <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === working">
+            {{ locale }}
+          </option>
+        </select>
+      </div>
+      <div class="working-selection">
+        <label for="workingFile">Working:</label>
+        <select id="workingFile" :value="working" @input="setWorking">
+          <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === reference">
+            {{ locale }}
+          </option>
+        </select>
+      </div>
+      <div class="confirmation">
+        <p v-if="failure">Failed to load data</p>
+        <button @click="closeConfig" :disabled="!reference || !working || reference === working">
+          Continue
+        </button>
+      </div>
     </div>
-    <div class="working-selection">
-      <label for="workingFile">Working:</label>
-      <select id="workingFile" :value="working" @input="setWorking">
-        <option v-for="(locale, index) in locales" :key="index" :value="locale" :disabled="locale === reference">
-          {{ locale }}
-        </option>
-      </select>
-    </div>
-    <button class="confirm" @click="closeConfig" :disabled="!reference || !working || reference === working">Continue
-    </button>
   </div>
 </template>
 
 <style scoped>
+.config-container {
+  display: flex;
+  height: 100vh;
+  justify-items: center;
+  align-items: center;
+}
+
 .config-menu {
   display: grid;
-  height: 100vh;
-  width: 100vw;
+  height: max-content;
+  width: max-content;
   gap: 15px;
   padding: 15px;
-  place-items: center;
-  grid-template-columns: auto auto;
-  grid-template-rows: 3fr 1fr;
+  margin: auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
 }
 
 .reference-selection {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
-  width: 100%;
-  margin: 20px auto;
+  width: 40vw;
+  max-width: 256px;
+  align-self: center;
+  justify-self: end;
 }
 
 .working-selection {
   grid-row: 1 / 2;
   grid-column: 2 / 3;
-  width: 100%;
-  margin: 20px auto;
+  width: 40vw;
+  max-width: 256px;
+  align-self: center;
+  justify-self: start;
 }
 
-.confirm {
+.confirmation {
   grid-row: 2 / 3;
   grid-column: 1 / 3;
+  align-self: start;
+  justify-self: center;
+  text-align: center;
 }
 
 .config-menu select {

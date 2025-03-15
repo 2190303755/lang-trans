@@ -11,5 +11,12 @@
     --color-switch-off: #E1E2E9;
     --color-outline: #73777F;
     --color-error: rgb(186 26 26);
+    --color-notice: rgb(49 106 65);
+    --color-outline-light: rgb(84 95 113);
+    --color-notice-shadow: rgba(49 106 65 / 0.25);
     --color-error-shadow: rgba(186 26 26 / 0.25);
+    --color-primary-shadow: rgba(58 96 143 / 0.25);
+    --color-notice-hr: rgba(49 106 65 / 0.5);
+    --color-error-hr: rgba(186 26 26 / 0.5);
+    --color-primary-hr: rgba(58 96 143 / 0.5);
 }
